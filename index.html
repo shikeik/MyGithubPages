@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏横屏游戏</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* 防止滚动条出现 */
+        }
+        canvas {
+            background: #f0f0f0;
+        }
+        #fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<button id="fullscreen-btn">进入全屏</button>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+    // 设置画布大小
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 绘制长方块
+        drawRectangle();
+    }
+
+    // 绘制长方块
+    function drawRectangle() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+        ctx.fillStyle = '#FF0000'; // 长方块颜色
+        ctx.fillRect(canvas.width / 4, canvas.height / 4, canvas.width / 2, canvas.height / 2); // 绘制长方块
+    }
+
+    // 切换全屏模式
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            canvas.requestFullscreen().catch(err => {
+                alert(`无法进入全屏模式：${err.message}`);
+            });
+            fullscreenBtn.textContent = '退出全屏';
+        } else {
+            document.exitFullscreen();
+            fullscreenBtn.textContent = '进入全屏';
+        }
+    }
+
+    // 窗口大小改变时调整画布大小
+    window.addEventListener('resize', resizeCanvas);
+
+    // 按钮点击事件处理器
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // 初始化画布大小和绘制内容
+    resizeCanvas();
+</script>
+
+</body>
+</html>
