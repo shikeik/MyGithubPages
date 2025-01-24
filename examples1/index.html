@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>任务管理应用</title>
+    <style>
+        .completed { background-color: green; color: white; }
+        .pending { background-color: white; color: black; }
+        .task-item { margin: 5px; padding: 5px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>任务管理应用</h1>
+    <input type="text" id="taskName" placeholder="任务名称"/>
+    <select id="roleType">
+        <option value="独立开发">独立开发</option>
+        <option value="独立测试">独立测试</option>
+        <option value="联合测试">联合测试</option>
+        <option value="功能修改">功能修改</option>
+    </select>
+    <button onclick="addTask()">添加任务</button>
+    
+    <h2>待完成任务</h2>
+    <div id="pendingTasks"></div>
+    
+    <h2>已完成任务</h2>
+    <div id="completedTasks"></div>
+
+    <div id="editTaskSection" style="display: none;">
+        <h3>修改任务</h3>
+        <input type="text" id="editTaskName" placeholder="新的任务名称"/>
+        <select id="editRoleType">
+            <option value="独立开发">独立开发</option>
+            <option value="独立测试">独立测试</option>
+            <option value="联合测试">联合测试</option>
+            <option value="功能修改">功能修改</option>
+        </select>
+        <button id="saveEditButton">保存修改</button>
+    </div>
+
+    <script>
+        const tasks = [];
+        let currentEditingIndex = null;
+
+        function addTask() {
+            const taskName = document.getElementById('taskName').value;
+            const roleType = document.getElementById('roleType').value;
+            const task = { name: taskName, role: roleType, completed: false };
+
+            tasks.push(task);
+            renderTasks();
+            document.getElementById('taskName').value = '';
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function startEditingTask(index) {
+            currentEditingIndex = index;
+            document.getElementById('editTaskName').value = tasks[index].name;
+            document.getElementById('editRoleType').value = tasks[index].role;
+            document.getElementById('editTaskSection').style.display = 'block';
+        }
+
+        function saveEditedTask() {
+            if (currentEditingIndex !== null) {
+                const newName = document.getElementById('editTaskName').value;
+                const newRole = document.getElementById('editRoleType').value;
+                tasks[currentEditingIndex].name = newName;
+                tasks[currentEditingIndex].role = newRole;
+
+                currentEditingIndex = null;
+                document.getElementById('editTaskSection').style.display = 'none';
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const pendingTasksDiv = document.getElementById('pendingTasks');
+            const completedTasksDiv = document.getElementById('completedTasks');
+            pendingTasksDiv.innerHTML = '';
+            completedTasksDiv.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.innerText = `${task.name} - ${task.role}`;
+                const toggleButton = document.createElement('button');
+                toggleButton.innerText = task.completed ? '还原' : '完成';
+                toggleButton.onclick = () => toggleTask(index);
+                
+                const editButton = document.createElement('button');
+                editButton.innerText = '修改';
+                editButton.onclick = () => startEditingTask(index);
+                
+                taskDiv.appendChild(editButton);
+                taskDiv.appendChild(toggleButton);
+                
+                (task.completed ? completedTasksDiv : pendingTasksDiv).appendChild(taskDiv);
+            });
+        }
+
+        document.getElementById('saveEditButton').onclick = saveEditedTask; // 绑定保存按钮
+    </script>
+</body>
+</html>

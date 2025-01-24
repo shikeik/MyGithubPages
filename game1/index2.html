@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星际冒险</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #282c34;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        #game {
+            border: 2px solid #61dafb;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        button {
+            background-color: #61dafb;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #21a1f1;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game">
+    <h1>欢迎来到星际冒险!</h1>
+    <p>你有<b id="resources">100</b>单位资源。</p>
+    
+    <button id="exploreButton">探索</button>
+    <button id="upgradeButton">升级探险船 (50单位)</button>
+
+    <h2 id="result"></h2>
+    <h3>你的状态：</h3>
+    <p>发现的星球：<span id="discoveredPlanets">0</span></p>
+    <p>剩余资源：<span id="remainingResources">100</span></p>
+    <p>探险船等级：<span id="shipLevel">1</span></p>
+</div>
+
+<script>
+    const planets = [
+        "火星", "金星", "木星", "土星", "水星",
+        "海王星", "天王星", "地球", "冥王星"
+    ];
+
+    let resources = 100; // 初始资源
+    let discoveredPlanetsCount = 0; // 已发现的行星数量
+    let shipLevel = 1; // 探险船等级
+
+    document.getElementById('exploreButton').addEventListener('click', function() {
+        if (resources <= 0) {
+            document.getElementById('result').innerText = '你没有足够的资源来探索！';
+            return; // 如果没有资源，则不进行探索
+        }
+
+        const randomIndex = Math.floor(Math.random() * planets.length);
+        const discoveredPlanet = planets[randomIndex];
+        
+        // 随机事件，可能会消耗或获得资源
+        const eventOutcome = Math.random();
+        
+        if (eventOutcome > 0.5) {
+            resources -= (10 - shipLevel); // 探索消耗资源，受船级影响
+            discoveredPlanetsCount++;
+            document.getElementById('result').innerText = `你发现了一个新星球：${discoveredPlanet}！消耗了${10 - shipLevel}单位资源。`;
+            
+            // 有机会获得额外奖励
+            if (Math.random() > 0.7) {
+                const bonusResources = Math.floor(Math.random() * (30 - shipLevel));
+                resources += bonusResources; 
+                document.getElementById('result').innerText += `\n你获得了额外 ${bonusResources} 单位资源！`;
+                
+                if(resources > 200) resources = 200; // 设置最大值
+                updateStatus();
+                return; 
+             }
+             
+         } else {
+             resources += (20 + shipLevel); // 探索获得额外资源，受船级影响
+             document.getElementById('result').innerText = `你发现了一个新星球：${discoveredPlanet}！获得了${20 + shipLevel}单位资源。`;
+         }
+
+         updateStatus();
+         
+         if (resources <= 0) {
+           document.getElementById('result').innerText += '\n你已经没有资源可用了，游戏结束！';
+           document.getElementById('exploreButton').disabled = true; // 禁用按钮
+       }
+   });
+
+   document.getElementById('upgradeButton').addEventListener('click', function() {
+       if (resources >= 50) { // 升级需要50单位资源
+           resources -= 50; 
+           shipLevel++; 
+           document.getElementById('result').innerText += '\n你的探险船升级成功！';
+           updateStatus();
+       } else {
+           document.getElementById('result').innerText += '\n你没有足够的资源来升级探险船！';
+       }
+   });
+
+   function updateStatus() {
+       document.getElementById('remainingResources').innerText = resources;
+       document.getElementById('discoveredPlanets').innerText = discoveredPlanetsCount;
+       document.getElementById('shipLevel').innerText = shipLevel;
+
+       if(shipLevel >=5) { 
+          alert("恭喜你，你已经达到了最高级别！");
+          location.reload(); 
+      }
+   }
+</script>
+
+</body>
+</html>
